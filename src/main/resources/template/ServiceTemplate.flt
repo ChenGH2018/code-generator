@@ -1,0 +1,67 @@
+
+<#list importPackages as package>
+import ${package};
+</#list>
+
+/**
+ * 说明： ${moduleName}
+ * 创建人：${author}
+ * 创建时间：${createDate}
+ */
+public interface ${fileName} {
+
+
+        /**
+         * 新增
+         * @param ${beanArgName}
+         * @throws Exception
+         */
+        Integer save(${beanName} ${beanArgName})throws Exception;
+
+        /**
+         * 单个删除
+         * @param id
+         * @throws Exception
+         */
+        Integer deleteOne(String id)throws Exception;
+
+        /**
+         * 修改不为null的字段
+         * 主键不能为null
+         * @param ${beanArgName}
+         */
+        Integer updateBySelective(${beanName} ${beanArgName})throws Exception;
+
+        ${beanName} selectById(String ${beanArgName}Id)throws Exception;
+
+        /**
+         * 查询不为null的字段
+         * @param ${beanArgName}
+         * @return
+         */
+        List<${beanName}> selectBySelective(${beanName} ${beanArgName})throws Exception;
+
+        /**
+         * 列表,分页查询
+         * @param pg
+         * @throws Exception
+         */
+        List<${beanName}> get${beanName}ByPage(Page pg)throws Exception;
+
+        /**
+         * 批量添加
+         * @param ${beanArgName}
+         * @throws Exception
+         */
+        Integer saveByList(List<${beanName}> ${beanArgName})throws Exception;
+
+        /**
+         * 批量删除
+         * @param ids
+         * @throws Exception
+         */
+        Integer deleteArray(String[]ids) throws Exception;
+
+
+}
+

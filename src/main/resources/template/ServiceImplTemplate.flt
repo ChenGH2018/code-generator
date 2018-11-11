@@ -1,0 +1,68 @@
+package com.zh.service.ordermanager.impl;
+
+<#list importPackages as package>
+import ${package};
+</#list>
+
+/**
+ * 说明： ${moduleName}
+ * 创建人：${author}
+ * 创建时间：${createDate}
+ */
+
+@Service
+@Transactional
+@Log4j
+public class ${fileName} implements ${serviceName} {
+
+    @Autowired
+    ${mapperName} ${mapperArgName};
+
+    @Override
+    public Integer save(${beanName} ${beanArgName}) throws Exception {
+        return ${mapperArgName}.save(${beanArgName});
+    }
+
+    @Override
+    public Integer deleteOne(String ${beanArgName}Id) throws Exception {
+        return ${mapperArgName}.deleteOne(${beanArgName}Id);
+    }
+
+    @Override
+    public Integer updateBySelective(${beanName} ${beanArgName}) throws Exception {
+        if(Strings.isNullOrEmpty(${beanArgName}.getId())) throw new RuntimeException("要修改的ID不能为空");
+    }
+
+
+    @Override
+    public ${beanName} selectById(String id) {
+        ${beanName} ${beanArgName} = new ${beanName}();
+        ${beanArgName}.setId(id);
+        List<${beanName}> ${beanArgName}s = ${mapperArgName}.selectBySelective(${beanArgName});
+        return ${beanArgName}s != null && ${beanArgName}s.size() == 1 ? ${beanArgName}s.get(0) : null;
+    }
+
+    @Override
+    public List<${beanName}> selectBySelective(${beanName} ${beanArgName}) {
+        return ${mapperArgName}.selectBySelective(${beanArgName});
+
+    }
+
+    @Override
+    public List<${beanName}> get${mapperName}ByPage(Page pg) {
+        return ${mapperArgName}.get${mapperName}ByPage(pg);
+    }
+
+    @Override
+    public Integer saveByList(List<${beanName}> ${mapperArgName}s) {
+        return ${mapperArgName}.saveByList(${mapperArgName}s);
+    }
+
+    @Override
+    public Integer deleteArray(String[] ids) {
+        return ${mapperArgName}.deleteArray(ids);
+    }
+
+
+}
+

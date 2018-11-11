@@ -1,0 +1,91 @@
+
+
+<#list importPackages as package>
+import ${package};
+</#list>
+
+
+/**
+ * Author: ${author}
+ * 说明：${moduleName}
+ * 创建时间：${createDate}
+ */
+@Api(tags = "${moduleName}")
+@RestController
+@RequestMapping("/${controllerRequest}")
+public class ${fileName}Controller {
+
+    @Autowired
+    private ${serviceName} ${serviceName};
+
+
+    @ApiOperation(value = "添加", notes = "添加")
+    @PostMapping("save")
+    public ResultVo save(@RequestBody ${beanName} ${beanArgName}) {
+        try {
+            ${beanArgName}.setId(UuidUtil.get32UUID());
+            return ResultVo.ok(${serviceName}.save(${beanArgName}));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultVo.fail(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "修改", notes = "修改")
+    @PutMapping("updateBySelective")
+    public ResultVo updateBySelective(@RequestBody ${beanName} ${beanArgName}) {
+        try {
+            return ResultVo.ok(${serviceName}.updateBySelective(${beanArgName}));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultVo.fail(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查看", notes = "根据id查看")
+    @GetMapping(value = "get${beanName}ById/{id}")
+    public ResultVo get${beanName}ById(@PathVariable String id) {
+        try {
+            return ResultVo.ok(${serviceName}.selectById(id));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultVo.fail(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "分页查看", notes = "分页")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页码", paramType = "query"),
+            @ApiImplicitParam(name = "size", value = "条数", paramType = "query")
+    })
+    @GetMapping("get${beanName}ByPage")
+    public ResultVo get${beanName}ByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size,
+                                          ${beanName} ${beanArgName}) {
+        Page pg = new Page();
+        pg.setPage(page);
+        pg.setSize(size);
+        HashMap<String, Object> hp = new HashMap<>();
+        hp.put("entity", ${beanArgName});
+        pg.setPd(hp);
+        try {
+            pg.setData(${serviceName}.getShopCompleteByPage(pg));
+            return ResultVo.ok(pg);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultVo.fail(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "删除一个或多个", notes = "删除一个或多个")
+        @DeleteMapping("deleteByIds/{ids}")
+        public ResultVo deleteByIds(@PathVariable String ids) {
+            try {
+                return ResultVo.ok(${serviceName}.deleteArray(id.split(",")));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResultVo.fail(e.getMessage());
+            }
+        }
+
+}
