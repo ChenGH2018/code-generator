@@ -77,10 +77,10 @@ public class ${fileName}Controller {
         }
     }
     @ApiOperation(value = "选择查询所有", notes = "选择查询所有")
-        @GetMapping("get${beanName}ByAll")
-        public ResultVo get${beanName}ByAll(${beanName} ${beanArgName}) {
+        @GetMapping("selectBySelective")
+        public ResultVo selectBySelective(${beanName} ${beanArgName}) {
             try {
-                return ResultVo.ok(${serviceName}.getShopCompleteByPage(pg));
+                return ResultVo.ok(${serviceName}.selectBySelective(${beanArgName}));
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResultVo.fail(e.getMessage());

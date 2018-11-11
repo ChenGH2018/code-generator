@@ -2,39 +2,18 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zh.mapper.setmeal.SetMealMapper">
+<mapper namespace="${mapperPath}">
 
     <!--表名 -->
     <sql id="tableName">
-    t_set_meal
-    </sql>
-    <!--菜品表 -->
-    <sql id="t_dishes">
-        t_dishes
+        ${tableName}
     </sql>
 
-    <sql id="Field">
-            add_user,
-            add_time,
-            update_user,
-            update_time,
-            catering_time,
-            catering_period,
-            a_menu,
-            a_menu_price,
-            b_menu,
-            b_menu_price,
-            soup,
-            stew_ids,
-            dessert_ids,
-            is_reservation,
-            is_delete,
-            carrying_type,
-            photo_url,
-            note,
-            a_menu_id,
-            b_menu_id,
-        id
+    <sql id="field">
+        id,
+        <#list importPackages as package>
+        import ${package};
+        </#list>
     </sql>
 
     <resultMap id="BaseResultMap" type="SetMeal">

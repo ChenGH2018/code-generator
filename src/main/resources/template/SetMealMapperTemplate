@@ -7,19 +7,19 @@
  */
 public interface ${mapperName} {
 
-    Integer save(${mapperName} ${mapperArgName});
+    Integer save(${beanName} ${beanArgName});
 
     Integer deleteOne(String id);
 
-    Integer updateBySelective(${mapperName} ${mapperArgName});
+    Integer updateBySelective(${beanName} ${beanArgName});
 
-    List<${mapperName}> selectBySelective(${mapperName} ${mapperArgName});
+    List<${beanName}> selectBySelective(${beanName} ${beanArgName});
 
-    Integer saveByList(List<${mapperName}> ${mapperArgName}s);
+    Integer saveByList(List<${beanName}> ${beanArgName}s);
 
     Integer deleteArray(String[] ids);
 
-    List<${mapperName}> get${mapperName}ByPage(Page pg);
+    List<${beanName}> get${beanName}ByPage(Page pg);
 
 
 }
