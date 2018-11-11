@@ -78,7 +78,7 @@ public class CodeGenerate {
         model.put("beanName",beanName)
         model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
         def template = configuration.getTemplate("ServiceImplTemplate.flt")
-        def file = new File(this.getClass().getClassLoader().getResource("generate").getPath() + '/service/'+beanName+"Service" +'/impl/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/service/'+beanName+"Service" +'/impl/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
@@ -108,7 +108,7 @@ public class CodeGenerate {
         model.put("beanName",beanName)
         model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
         def template = configuration.getTemplate("ServiceTemplate.flt")
-        def file = new File(this.getClass().getClassLoader().getResource("generate").getPath() + '/service/'+fileName.toLowerCase() +'/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/service/'+fileName.toLowerCase() +'/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
@@ -140,7 +140,7 @@ public class CodeGenerate {
         model.put("beanName",beanName)
         model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
         def template = configuration.getTemplate("ControllerTemplate.flt")
-        def file = new File(this.getClass().getClassLoader().getResource("generate").getPath() + '/controller/'+fileName.toLowerCase() +'/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/controller/'+fileName.toLowerCase() +'/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
@@ -182,7 +182,7 @@ public class CodeGenerate {
         model.put("fileName",fileName)
 
         def template = configuration.getTemplate("BeanTemplate.flt")
-        def file = new File(this.getClass().getClassLoader().getResource("generate").getPath() + '/bean/'+fileName.toLowerCase() +'/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/bean/'+fileName.toLowerCase() +'/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
@@ -194,6 +194,7 @@ public class CodeGenerate {
 
     def generateImportPackage(ArrayList<String> importPackages, List<BeanPropertyInfo> beanPropertyInfos) {
         Set<String> set =new HashSet<>()
+        set.add("io.swagger.annotations.ApiModelProperty")
         beanPropertyInfos.forEach({
             switch (it.getType()){
                 case "Date":
@@ -217,7 +218,7 @@ public class CodeGenerate {
             type = colum.substring(0, colum.indexOf(" ")) //没有大小用第一个空格截取
         }
         switch (type) {
-            case 'int': case 'integer': case 'tinyint':
+            case 'int': case 'integer': case 'tinyint': case 'smallint':
                 proInfo.setType("Integer"); break
             case "double":
                 proInfo.setType("Double"); break
@@ -233,9 +234,11 @@ public class CodeGenerate {
 //                    proInfo.setType("Integer")
 //                else
 //                    proInfo.setType("byte")
+            default:
+                throw new RuntimeException("未知的类型"+type)
         }
-        if (colum.contains("COMMENT ")) {
-            proInfo.setDescription(colum.substring(colum.indexOf("'") + 1, colum.length() - 2))
+        if (colum.contains("COMMENT '")) {
+            proInfo.setDescription(colum.substring(colum.indexOf("COMMENT '") + "COMMENT '".length(), colum.lastIndexOf("'")))
 //提取注释 e.g. COMMENT '申请商家ID',
         }
         return proInfo
@@ -264,5 +267,12 @@ public class CodeGenerate {
         return UnderscoreTocapital(result)
     }
 
-
+    URL getGenerateUrl(){
+        def resource = this.getClass().getClassLoader().getResource("generate")
+        if(!resource) {
+            new File(this.getClass().getResource("/").getPath() + "/generate").mkdir()
+            resource = this.getClass().getClassLoader().getResource("generate")
+        }
+        return resource
+    }
 }

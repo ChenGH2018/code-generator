@@ -54,7 +54,7 @@ public class ${fileName}Controller {
         }
     }
 
-    @ApiOperation(value = "分页查看", notes = "分页")
+    @ApiOperation(value = "选择查询分页", notes = "选择查询分页")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页码", paramType = "query"),
             @ApiImplicitParam(name = "size", value = "条数", paramType = "query")
@@ -76,6 +76,16 @@ public class ${fileName}Controller {
             return ResultVo.fail(e.getMessage());
         }
     }
+    @ApiOperation(value = "选择查询所有", notes = "选择查询所有")
+        @GetMapping("get${beanName}ByAll")
+        public ResultVo get${beanName}ByAll(${beanName} ${beanArgName}) {
+            try {
+                return ResultVo.ok(${serviceName}.getShopCompleteByPage(pg));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResultVo.fail(e.getMessage());
+            }
+        }
 
     @ApiOperation(value = "删除一个或多个", notes = "删除一个或多个")
         @DeleteMapping("deleteByIds/{ids}")

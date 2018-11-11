@@ -1,0 +1,25 @@
+
+
+/**
+ * 说明： ${moduleName}
+ * 创建人：${author}
+ * 创建时间：${createDate}
+ */
+public interface ${mapperName} {
+
+    Integer save(${mapperName} ${mapperArgName});
+
+    Integer deleteOne(String id);
+
+    Integer updateBySelective(${mapperName} ${mapperArgName});
+
+    List<${mapperName}> selectBySelective(${mapperName} ${mapperArgName});
+
+    Integer saveByList(List<${mapperName}> ${mapperArgName}s);
+
+    Integer deleteArray(String[] ids);
+
+    List<${mapperName}> get${mapperName}ByPage(Page pg);
+
+
+}

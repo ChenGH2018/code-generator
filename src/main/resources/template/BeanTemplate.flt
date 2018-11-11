@@ -21,7 +21,7 @@ public class ${fileName} {
     <#list properties as property>
     <#if property.propertyName == "id">
     <#else>
-    private ${property.type}  ${property.propertyName}; //${property.description}
+    private ${property.type}  ${property.propertyName}; <#if (property.description)?? >  //${property.description}</#if>
     </#if>
     </#list>
 }
