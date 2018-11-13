@@ -31,6 +31,7 @@ public class ${fileName} implements ${serviceName} {
     @Override
     public Integer updateBySelective(${beanName} ${beanArgName}) throws Exception {
         if(Strings.isNullOrEmpty(${beanArgName}.getId())) throw new RuntimeException("要修改的ID不能为空");
+        return ${mapperArgName}.updateBySelective(${beanArgName});
     }
 
 
@@ -49,8 +50,8 @@ public class ${fileName} implements ${serviceName} {
     }
 
     @Override
-    public List<${beanName}> get${mapperName}ByPage(Page pg) {
-        return ${mapperArgName}.get${mapperName}ByPage(pg);
+    public List<${beanName}> get${beanName}ByPage(Page pg) {
+        return ${mapperArgName}.get${beanName}ByPage(pg);
     }
 
     @Override

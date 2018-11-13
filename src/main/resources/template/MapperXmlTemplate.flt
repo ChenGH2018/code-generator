@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${mapperPath}">
+
+    <!--表名 -->
+    <sql id="tableName">
+        ${tableName}
+    </sql>
+
+    <sql id="field">
+        <#list fields as field>
+        ${field},
+        </#list>
+        id
+    </sql>
+
+    <resultMap id="baseResultMap" type="${beanName}">
+    <#list fieldMappers as fieldMapper>
+        <result column="${fieldMapper.filed}" property="${fieldMapper.property}"/>
+    </#list>
+        <id column="id" property="id"/>
+    </resultMap>
+
+    <!-- 新增-->
+    <insert id="save" parameterType="${beanName}">
+        INSERT INTO
+        <include refid="tableName"/>
+        (<include refid="field"/>
+        VALUES
+        (
+<#list fileds as filed>
+        #{filed},
+</#list>
+        #{id}
+        )
+    </insert>
+
+    <!--修改-->
+    <update id="updateBySelective" parameterType="${beanName}">
+        update
+        <include refid="tableName"/>
+        <set>
+<#list fieldMappers as fieldMapper>
+     <#if fieldMapper.property = "String">.
+        <if test="${fieldMapper.property} != null and ${fieldMapper.property} != ''">, ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
+     <#else>
+        <if test="${fieldMapper.property} != null>, ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
+     </#if>
+
+</#list>
+        </set>
+        WHERE
+        id=#{id}
+    </update>
+    <!--条件查询-->
+    <select id="selectBySelective" parameterType="${beanName}" resultType="baseResultMap">
+        select
+        <#list fields as field>${field}, </#list>
+        id
+        from <include refid="tableName"/>
+        <where>
+  <#list fieldMappers as fieldMapper>
+      <#if fieldMapper.property = "String">.
+         <if test="${fieldMapper.property} != null and ${fieldMapper.property} != ''">AND ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
+      <#else>
+         <if test="${fieldMapper.property} != null>AND ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
+      </#if>
+  </#list>
+        </where>
+    </select>
+
+    <!--条件查询-->
+    <select id="get${beanName}ByPage" parameterType="Page" resultMap="baseResultMap">
+    select
+            <#list fields as field>${field}, </#list>
+            id
+            from <include refid="tableName"/>
+            <where>
+      <#list fieldMappers as fieldMapper>
+          <#if fieldMapper.property = "String">.
+             <if test="pd.entity.${fieldMapper.property} != null and ${fieldMapper.property} != ''">AND ${fieldMapper.filed}=#{pd.entity.${fieldMapper.property}}</if>
+          <#else>
+             <if test="pd.entity.${fieldMapper.property} != null>AND ${fieldMapper.filed}=#{pd.entity.${fieldMapper.property}}</if>
+          </#if>
+      </#list>
+            </where>
+    </select>
+
+    <!--批量插入操作-->
+    <insert id="saveByList" parameterType="${beanName}">
+        INSERT INTO
+        <include refid="tableName"/>
+        (<include refid="field"/>
+        VALUES
+        <foreach item="t" index="index" collection="list" separator=",">
+            (
+      <#list fieldMappers as fieldMapper>
+            #{t.${fieldMapper.property}},
+      </#list>
+            #{t.id}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量删除操作-->
+    <delete id="deleteArray" parameterType="String">
+            delete from
+            <include refid="tableName"/>
+            where
+            id in
+            <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+            </foreach>
+    </delete>
+</mapper>

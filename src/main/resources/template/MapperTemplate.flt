@@ -1,0 +1,26 @@
+<#list importPackages as package>
+import ${package};
+</#list>
+
+/**
+ * 说明： ${moduleName}
+ * 创建人：${author}
+ * 创建时间：${createDate}
+ */
+public interface ${fileName} {
+
+    Integer save(${beanName} ${beanArgName});
+
+    Integer saveByList(List<${beanName}> ${beanArgName}s);
+
+    Integer updateBySelective(${beanName} ${beanArgName});
+
+    Integer deleteOne(String id);
+
+    List<${beanName}> selectBySelective(${beanName} ${beanArgName});
+
+    List<${beanName}> get${beanName}ByPage(Page pg);
+
+    Integer deleteArray(String[] ids);
+
+}

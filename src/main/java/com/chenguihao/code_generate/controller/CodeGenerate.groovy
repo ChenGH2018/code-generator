@@ -49,23 +49,91 @@ public class CodeGenerate {
         //初始化
         List<BeanPropertyInfo> proList = new ArrayList<>()
         initSqlFile(originalFile,proList,generateConfig)
-        File beanFile = generateBeanFile(proList,generateConfig)//生成bean文件
-        File controllerFile = generateControllerFile(proList,generateConfig)//生成controller文件
+        File beanFile = generateBeanFile(proList,generateConfig)//生成bean
+        File controllerFile = generateControllerFile(proList,generateConfig)//生成controller
         File serviceFile = generateServiceFile(proList,generateConfig)//生成service文件
-        File serviceImplFile = generateServiceImplFile(proList,generateConfig)//生成service文件
-//        File mapperFile = generateMapperFile(proList,generateConfig)//生成mapper文件
+        File serviceImplFile = generateServiceImplFile(proList,generateConfig)//生成service
+        File mapperFile = generateMapperFile(proList,generateConfig)//生成mapper
+        File mapperXmlFile = generateMapperXmlFile(proList,generateConfig)//生成mapperXml
+    }
+
+    File generateMapperXmlFile(ArrayList<BeanPropertyInfo> beanPropertyInfos, GenerateConfig generateConfig) {
+        def prefix = ".xml"
+        def beanName = tableNameToFileName(generateConfig.getTableName())
+        def fileName = beanName+"Mapper"
+        Map<String, Object> model = new HashMap<>()//freamarker解析的model
+        List<String> importPackages = new ArrayList<>()
+
+        //填充数据
+        model.put("mapperPath", generateConfig.getPackageName()+"."+"mapper"+"."+beanName.toLowerCase()+fileName)
+
+        model.put("fileName",fileName)//${mapperName} ${mapperArgName}
+        model.put("beanName",beanName)
+        def template = configuration.getTemplate("MapperTemplate.flt")
+        def file = new File(getGenerateUrl().getPath() + '/Mapper/'+beanName.toLowerCase()+"/"+ fileName + prefix)
+        file.getParentFile().mkdirs()
+        file.createNewFile()
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+        template.process(model, writer)
+        writer.flush()
+        writer.close()
+        return file
+
+    }
+
+    File generateMapperFile(ArrayList<BeanPropertyInfo> beanPropertyInfos, GenerateConfig generateConfig) {
+        def prefix = ".java"
+        def beanName = tableNameToFileName(generateConfig.getTableName())
+        def fileName = beanName+"Mapper"
+        Map<String, Object> model = new HashMap<>()//freamarker解析的model
+        List<String> importPackages = new ArrayList<>()
+
+        //填写导入包信息
+        importPackages.add(generateConfig.getPackageName()+".bean."+beanName.toLowerCase()+"."+beanName)
+        importPackages.add(generateConfig.getPackageName()+"."+generateConfig.getPagePath())
+        importPackages.add("java.util.List")
+
+        //开启生成
+        model.put("author", generateConfig.getAuthor())
+        model.put("createDate", Const.dateFormat.format(new Date()))
+//        model.put("package", generateConfig.getPackageName())
+//        model.put("packageName", generateConfig.getPackageName()+"."+fileName.toLowerCase())
+        model.put("importPackages", importPackages)
+        model.put("fileName",fileName)//${mapperName} ${mapperArgName}
+        model.put("moduleName",generateConfig.getModuleName())
+        model.put("beanName",beanName)
+        model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
+        def template = configuration.getTemplate("MapperTemplate.flt")
+        def file = new File(getGenerateUrl().getPath() + '/Mapper/'+beanName.toLowerCase()+"/"+ fileName + prefix)
+        file.getParentFile().mkdirs()
+        file.createNewFile()
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+        template.process(model, writer)
+        writer.flush()
+        writer.close()
+        return file
     }
 
     File generateServiceImplFile(ArrayList<BeanPropertyInfo> beanPropertyInfos, GenerateConfig generateConfig) {
         def prefix = ".java"
-        def fileName = tableNameToFileName(generateConfig.getTableName())+"ServiceImpl"
         def beanName = tableNameToFileName(generateConfig.getTableName())
-        Map<String, Object> model = new HashMap<>()//freamarker解析的model
+        def fileName = beanName+"ServiceImpl"
+        Map<String, Object> model = new HashMap<>()
         List<String> importPackages = new ArrayList<>()
-        importPackages.add(generateConfig.getPackageName()+".bean."+fileName)
+        importPackages.add(generateConfig.getPackageName()+".bean."+beanName.toLowerCase()+"."+beanName) //beanPath
+        importPackages.add(generateConfig.getPackageName()+".service."+beanName.toLowerCase()+"."+beanName+"Service") //ServicePath
+        importPackages.add(generateConfig.getPackageName()+".mapper."+beanName.toLowerCase()+"."+beanName+"Mapper") //MapperPath
+        importPackages.add(generateConfig.getPackageName()+"."+generateConfig.getPagePath())
+
         importPackages.add("java.util.List")
+        importPackages.add("lombok.extern.log4j.Log4j") //loggerPath
+        importPackages.add("org.springframework.transaction.annotation.*")
+        importPackages.add("org.springframework.stereotype.Service")
+        importPackages.add("com.google.common.base.Strings")
+        importPackages.add("org.springframework.beans.factory.annotation.Autowired")
+
         //开启生成
-        model.put("author", "chenguihao")
+        model.put("author", generateConfig.getAuthor())
         model.put("createDate", Const.dateFormat.format(new Date()))
 //        model.put("package", generateConfig.getPackageName())
         model.put("packageName", generateConfig.getPackageName()+"."+fileName.toLowerCase())
@@ -78,7 +146,7 @@ public class CodeGenerate {
         model.put("beanName",beanName)
         model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
         def template = configuration.getTemplate("ServiceImplTemplate.flt")
-        def file = new File(getGenerateUrl().getPath() + '/service/'+beanName+"Service" +'/impl/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/service/'+beanName.toLowerCase() +'/impl/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
@@ -90,14 +158,16 @@ public class CodeGenerate {
 
     File generateServiceFile(ArrayList<BeanPropertyInfo> beanPropertyInfos, GenerateConfig generateConfig) {
         def prefix = ".java"
-        def fileName = tableNameToFileName(generateConfig.getTableName())+"Service"
         def beanName = tableNameToFileName(generateConfig.getTableName())
+        def fileName = beanName+"Service"
         Map<String, Object> model = new HashMap<>()//freamarker解析的model
         List<String> importPackages = new ArrayList<>()
-        importPackages.add(generateConfig.getPackageName()+".bean."+fileName)
+        importPackages.add(generateConfig.getPackageName()+".bean."+beanName.toLowerCase()+"."+beanName)
         importPackages.add("java.util.List")
-        //开启生成
-        model.put("author", "chenguihao")
+        importPackages.add(generateConfig.getPackageName()+"."+generateConfig.getPagePath())
+
+        //填充数据
+        model.put("author", generateConfig.getAuthor())
         model.put("createDate", Const.dateFormat.format(new Date()))
 //        model.put("package", generateConfig.getPackageName())
         model.put("packageName", generateConfig.getPackageName()+"."+fileName.toLowerCase())
@@ -108,7 +178,7 @@ public class CodeGenerate {
         model.put("beanName",beanName)
         model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
         def template = configuration.getTemplate("ServiceTemplate.flt")
-        def file = new File(getGenerateUrl().getPath() + '/service/'+fileName.toLowerCase() +'/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/service/'+beanName.toLowerCase() +'/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
@@ -120,15 +190,22 @@ public class CodeGenerate {
 
     File generateControllerFile(ArrayList<BeanPropertyInfo> beanPropertyInfos, GenerateConfig generateConfig) {
         def prefix = ".java"
-        def fileName = tableNameToFileName(generateConfig.getTableName())+"Controller"
         def beanName = tableNameToFileName(generateConfig.getTableName())
+        def fileName = beanName+"Controller"
         Map<String, Object> model = new HashMap<>()//freamarker解析的model
         List<String> importPackages = new ArrayList<>()
+        importPackages.add(generateConfig.getPackageName()+".bean."+beanName.toLowerCase()+"."+beanName)//bean
+        importPackages.add(generateConfig.getPackageName()+".service."+beanName.toLowerCase()+"."+beanName+"Service")//service
         importPackages.add(generateConfig.getPackageName()+"."+generateConfig.getPagePath())
         importPackages.add(generateConfig.getPackageName()+"."+generateConfig.getResultVoPath())
-        importPackages.add(generateConfig.getPackageName()+".bean."+fileName)
-        //开启生成
-        model.put("author", "chenguihao")
+        importPackages.add(generateConfig.getPackageName()+"."+generateConfig.getBaseExceptionPath())
+        importPackages.add("io.swagger.annotations.Api")
+        importPackages.add("org.springframework.web.bind.annotation.*")
+        importPackages.add("org.springframework.beans.factory.annotation.Autowired")
+        importPackages.add("io.swagger.annotations.*")
+
+        //填充数据
+        model.put("author", generateConfig.getAuthor())
         model.put("createDate", Const.dateFormat.format(new Date()))
         model.put("package", generateConfig.getPackageName())
         model.put("packageName", generateConfig.getPackageName()+"."+fileName.toLowerCase())
@@ -140,10 +217,10 @@ public class CodeGenerate {
         model.put("beanName",beanName)
         model.put("beanArgName",beanName[0].toLowerCase()+beanName.substring(1,beanName.length()))
         def template = configuration.getTemplate("ControllerTemplate.flt")
-        def file = new File(getGenerateUrl().getPath() + '/controller/'+fileName.toLowerCase() +'/'+ fileName + prefix)
+        def file = new File(getGenerateUrl().getPath() + '/controller/'+beanName.toLowerCase() +'/'+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
-        Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8")
         template.process(model, writer)
         writer.flush()
         writer.close()
@@ -174,7 +251,7 @@ public class CodeGenerate {
         generateImportPackage(importPackages,proList)
         //开启生成
         model.put("tableName",generateConfig.getTableName())
-        model.put("author", "chenguihao")
+        model.put("author", generateConfig.getAuthor())
         model.put("createDate", Const.dateFormat.format(new Date()))
         model.put("packageName", generateConfig.getPackageName()+".bean."+fileName.toLowerCase())
         model.put("properties", proList)
@@ -257,14 +334,22 @@ public class CodeGenerate {
         return result
     }
 
+//    def tableNameToFileName(String s) {//表名to文件名
+//        def result = "";
+//        def offset = 0;
+//        if (s.startsWith("t_")) {
+//            offset = 2
+//        }
+//        result removeUnderline(s.substring(offset))
+//    }
     def tableNameToFileName(String s) {//表名to文件名
-        def result = "";
-        def offset = 0;
+        def result = ""
+        def offset = 0
         if (s.startsWith("t_")) {
             offset = 2
         }
-        result = s[offset].toUpperCase() + s.substring(offset+1)
-        return UnderscoreTocapital(result)
+        result = UnderscoreTocapital(s.substring(offset))
+        return result[0].toUpperCase()+result.substring(1)
     }
 
     URL getGenerateUrl(){
@@ -274,5 +359,13 @@ public class CodeGenerate {
             resource = this.getClass().getClassLoader().getResource("generate")
         }
         return resource
+    }
+    def removeUnderline(String s){
+        def result = ""
+        for(int i = 0 ;i<s.length();i++){
+            if(s[i] != '_')
+                result += s[i]
+        }
+        return result
     }
 }

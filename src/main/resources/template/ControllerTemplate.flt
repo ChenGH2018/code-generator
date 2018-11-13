@@ -13,7 +13,7 @@ import ${package};
 @Api(tags = "${moduleName}")
 @RestController
 @RequestMapping("/${controllerRequest}")
-public class ${fileName}Controller {
+public class ${fileName} {
 
     @Autowired
     private ${serviceName} ${serviceName};
@@ -27,7 +27,7 @@ public class ${fileName}Controller {
             return ResultVo.ok(${serviceName}.save(${beanArgName}));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getMessage());
+            return ResultVo.fail(e.getErrorCode,e.getMessage());wwwww
         }
     }
 
@@ -37,9 +37,9 @@ public class ${fileName}Controller {
     public ResultVo updateBySelective(@RequestBody ${beanName} ${beanArgName}) {
         try {
             return ResultVo.ok(${serviceName}.updateBySelective(${beanArgName}));
-        } catch (Exception e) {
+        } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getMessage());
+            return ResultVo.fail(e.getErrorCode,e.getMessage());
         }
     }
 
@@ -48,9 +48,9 @@ public class ${fileName}Controller {
     public ResultVo get${beanName}ById(@PathVariable String id) {
         try {
             return ResultVo.ok(${serviceName}.selectById(id));
-        } catch (Exception e) {
+        } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getMessage());
+            return ResultVo.fail(e.getErrorCode,e.getMessage());
         }
     }
 
@@ -71,9 +71,9 @@ public class ${fileName}Controller {
         try {
             pg.setData(${serviceName}.getShopCompleteByPage(pg));
             return ResultVo.ok(pg);
-        } catch (Exception e) {
+        } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getMessage());
+            return ResultVo.fail(e.getErrorCode,e.getMessage());
         }
     }
     @ApiOperation(value = "选择查询所有", notes = "选择查询所有")
@@ -81,9 +81,9 @@ public class ${fileName}Controller {
         public ResultVo selectBySelective(${beanName} ${beanArgName}) {
             try {
                 return ResultVo.ok(${serviceName}.selectBySelective(${beanArgName}));
-            } catch (Exception e) {
+            } catch (BaseException e) {
                 e.printStackTrace();
-                return ResultVo.fail(e.getMessage());
+                return ResultVo.fail(e.getErrorCode,e.getMessage());
             }
         }
 
@@ -92,9 +92,9 @@ public class ${fileName}Controller {
         public ResultVo deleteByIds(@PathVariable String ids) {
             try {
                 return ResultVo.ok(${serviceName}.deleteArray(id.split(",")));
-            } catch (Exception e) {
+            } catch (BaseException e) {
                 e.printStackTrace();
-                return ResultVo.fail(e.getMessage());
+                return ResultVo.fail(e.getErrorCode,e.getMessage());
             }
         }
 
