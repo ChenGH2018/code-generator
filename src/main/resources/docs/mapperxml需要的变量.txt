@@ -2,4 +2,7 @@ ${mapperPath}
 ${tableName}
 ${fields} ->List
 ${beanName}
-${fieldMappers} ->filed/property
+${BeanPropertyInfos} ->columName/propertyName
+${r'#{'}
+${tableAlias}
+<#list fields as field>${field}, </#list>

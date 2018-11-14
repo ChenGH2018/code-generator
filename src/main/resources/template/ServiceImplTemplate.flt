@@ -19,17 +19,17 @@ public class ${fileName} implements ${serviceName} {
     ${mapperName} ${mapperArgName};
 
     @Override
-    public Integer save(${beanName} ${beanArgName}) throws Exception {
+    public Integer save(${beanName} ${beanArgName}) throws BaseException {
         return ${mapperArgName}.save(${beanArgName});
     }
 
     @Override
-    public Integer deleteOne(String ${beanArgName}Id) throws Exception {
+    public Integer deleteOne(String ${beanArgName}Id) throws BaseException {
         return ${mapperArgName}.deleteOne(${beanArgName}Id);
     }
 
     @Override
-    public Integer updateBySelective(${beanName} ${beanArgName}) throws Exception {
+    public Integer updateBySelective(${beanName} ${beanArgName}) throws BaseException {
         if(Strings.isNullOrEmpty(${beanArgName}.getId())) throw new RuntimeException("要修改的ID不能为空");
         return ${mapperArgName}.updateBySelective(${beanArgName});
     }

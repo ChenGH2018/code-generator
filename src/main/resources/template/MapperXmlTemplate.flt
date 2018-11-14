@@ -15,12 +15,18 @@
         </#list>
         id
     </sql>
+    <sql id="aliasField">
+        <#list fields as field>
+        ${tableAlias}.${field} AS  ${tableAlias}_${field},
+        </#list>
+        ${tableAlias}.id AS  ${tableAlias}_id
+        </sql>
 
     <resultMap id="baseResultMap" type="${beanName}">
-    <#list fieldMappers as fieldMapper>
-        <result column="${fieldMapper.filed}" property="${fieldMapper.property}"/>
+        <id column="${tableAlias}_id" property="id"/>
+    <#list BeanPropertyInfos as BeanPropertyInfo>
+        <result column="${tableAlias}_${BeanPropertyInfo.columName}" property="${BeanPropertyInfo.propertyName}"/>
     </#list>
-        <id column="id" property="id"/>
     </resultMap>
 
     <!-- 新增-->
@@ -30,10 +36,10 @@
         (<include refid="field"/>
         VALUES
         (
-<#list fileds as filed>
-        #{filed},
+<#list fields as field>
+        ${r'#{'}${field}},
 </#list>
-        #{id}
+        ${r'#{'}id}
         )
     </insert>
 
@@ -42,50 +48,35 @@
         update
         <include refid="tableName"/>
         <set>
-<#list fieldMappers as fieldMapper>
-     <#if fieldMapper.property = "String">.
-        <if test="${fieldMapper.property} != null and ${fieldMapper.property} != ''">, ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
-     <#else>
-        <if test="${fieldMapper.property} != null>, ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
-     </#if>
-
+<#list BeanPropertyInfos as BeanPropertyInfo>
+        <if test="${BeanPropertyInfo.propertyName} != null <#if BeanPropertyInfo.type = "String">and ${BeanPropertyInfo.propertyName} != ''</#if>">, ${BeanPropertyInfo.columName}=${r'#{'}${BeanPropertyInfo.propertyName}}</if>
 </#list>
         </set>
         WHERE
-        id=#{id}
+        id=${r'#{'}id}
     </update>
-    <!--条件查询-->
+    <!--条件查询所有-->
     <select id="selectBySelective" parameterType="${beanName}" resultType="baseResultMap">
         select
-        <#list fields as field>${field}, </#list>
-        id
-        from <include refid="tableName"/>
+        <include refid="aliasField"/>
+        from <include refid="tableName"/> AS ${tableAlias}
         <where>
-  <#list fieldMappers as fieldMapper>
-      <#if fieldMapper.property = "String">.
-         <if test="${fieldMapper.property} != null and ${fieldMapper.property} != ''">AND ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
-      <#else>
-         <if test="${fieldMapper.property} != null>AND ${fieldMapper.filed}=#{${fieldMapper.property}}</if>
-      </#if>
+  <#list BeanPropertyInfos as BeanPropertyInfo>
+         <if test="${BeanPropertyInfo.propertyName} != null <#if BeanPropertyInfo.propertyName = "String">and ${BeanPropertyInfo.propertyName} != ''</#if>">AND ${tableAlias}.${BeanPropertyInfo.columName}=${r'#{'}${BeanPropertyInfo.propertyName}}</if>
   </#list>
         </where>
     </select>
 
-    <!--条件查询-->
+    <!--条件查询分页-->
     <select id="get${beanName}ByPage" parameterType="Page" resultMap="baseResultMap">
-    select
-            <#list fields as field>${field}, </#list>
-            id
-            from <include refid="tableName"/>
-            <where>
-      <#list fieldMappers as fieldMapper>
-          <#if fieldMapper.property = "String">.
-             <if test="pd.entity.${fieldMapper.property} != null and ${fieldMapper.property} != ''">AND ${fieldMapper.filed}=#{pd.entity.${fieldMapper.property}}</if>
-          <#else>
-             <if test="pd.entity.${fieldMapper.property} != null>AND ${fieldMapper.filed}=#{pd.entity.${fieldMapper.property}}</if>
-          </#if>
+        select
+        <include refid="aliasField"/>
+        from <include refid="tableName"/> AS ${tableAlias}
+        <where>
+      <#list BeanPropertyInfos as BeanPropertyInfo>
+        <if test="pd.entity.${BeanPropertyInfo.propertyName} != null <#if BeanPropertyInfo.propertyName = "String">and ${BeanPropertyInfo.propertyName} != ''</#if>">AND ${tableAlias}.${BeanPropertyInfo.columName}=${r'#{'}pd.entity.${BeanPropertyInfo.propertyName}}</if>
       </#list>
-            </where>
+        </where>
     </select>
 
     <!--批量插入操作-->
@@ -96,22 +87,22 @@
         VALUES
         <foreach item="t" index="index" collection="list" separator=",">
             (
-      <#list fieldMappers as fieldMapper>
-            #{t.${fieldMapper.property}},
+      <#list BeanPropertyInfos as BeanPropertyInfo>
+            ${r'#{'}t.${BeanPropertyInfo.propertyName}},
       </#list>
-            #{t.id}
+            ${r'#{'}t.id}
             )
         </foreach>
     </insert>
 
     <!--批量删除操作-->
     <delete id="deleteArray" parameterType="String">
-            delete from
-            <include refid="tableName"/>
-            where
-            id in
-            <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
-            #{item}
-            </foreach>
+        delete from
+        <include refid="tableName"/>
+        where
+        id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+        ${r'#{'}item}
+        </foreach>
     </delete>
 </mapper>

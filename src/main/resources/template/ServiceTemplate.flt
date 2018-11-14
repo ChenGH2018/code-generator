@@ -14,53 +14,53 @@ public interface ${fileName} {
         /**
          * 新增
          * @param ${beanArgName}
-         * @throws Exception
+         * @throws BaseException
          */
-        Integer save(${beanName} ${beanArgName})throws Exception;
+        Integer save(${beanName} ${beanArgName})throws BaseException;
 
         /**
          * 单个删除
          * @param id
-         * @throws Exception
+         * @throws BaseException
          */
-        Integer deleteOne(String id)throws Exception;
+        Integer deleteOne(String id)throws BaseException;
 
         /**
          * 修改不为null的字段
          * 主键不能为null
          * @param ${beanArgName}
          */
-        Integer updateBySelective(${beanName} ${beanArgName})throws Exception;
+        Integer updateBySelective(${beanName} ${beanArgName})throws BaseException;
 
-        ${beanName} selectById(String ${beanArgName}Id)throws Exception;
+        ${beanName} selectById(String ${beanArgName}Id)throws BaseException;
 
         /**
          * 查询不为null的字段
          * @param ${beanArgName}
          * @return
          */
-        List<${beanName}> selectBySelective(${beanName} ${beanArgName})throws Exception;
+        List<${beanName}> selectBySelective(${beanName} ${beanArgName})throws BaseException;
 
         /**
          * 列表,分页查询
          * @param pg
-         * @throws Exception
+         * @throws BaseException
          */
-        List<${beanName}> get${beanName}ByPage(Page pg)throws Exception;
+        List<${beanName}> get${beanName}ByPage(Page pg)throws BaseException;
 
         /**
          * 批量添加
          * @param ${beanArgName}
-         * @throws Exception
+         * @throws BaseException
          */
-        Integer saveByList(List<${beanName}> ${beanArgName})throws Exception;
+        Integer saveByList(List<${beanName}> ${beanArgName})throws BaseException;
 
         /**
          * 批量删除
          * @param ids
-         * @throws Exception
+         * @throws BaseException
          */
-        Integer deleteArray(String[]ids) throws Exception;
+        Integer deleteArray(String[]ids) throws BaseException;
 
 
 }

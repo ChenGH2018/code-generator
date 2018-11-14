@@ -15,7 +15,6 @@ import ${package};
 @Table(name = "${tableName}")
 public class ${fileName} {
 
-    @ApiModelProperty(hidden = true)
     @Id
     private String id;
     <#list properties as property>

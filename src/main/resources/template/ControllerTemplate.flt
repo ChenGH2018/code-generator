@@ -25,9 +25,9 @@ public class ${fileName} {
         try {
             ${beanArgName}.setId(UuidUtil.get32UUID());
             return ResultVo.ok(${serviceName}.save(${beanArgName}));
-        } catch (Exception e) {
+        } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getErrorCode,e.getMessage());wwwww
+            return ResultVo.fail(e.getCode(),e.getMessage());
         }
     }
 
@@ -39,7 +39,7 @@ public class ${fileName} {
             return ResultVo.ok(${serviceName}.updateBySelective(${beanArgName}));
         } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getErrorCode,e.getMessage());
+            return ResultVo.fail(e.getCode(),e.getMessage());
         }
     }
 
@@ -50,7 +50,7 @@ public class ${fileName} {
             return ResultVo.ok(${serviceName}.selectById(id));
         } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getErrorCode,e.getMessage());
+            return ResultVo.fail(e.getCode(),e.getMessage());
         }
     }
 
@@ -69,11 +69,11 @@ public class ${fileName} {
         hp.put("entity", ${beanArgName});
         pg.setPd(hp);
         try {
-            pg.setData(${serviceName}.getShopCompleteByPage(pg));
+            pg.setData(${serviceName}.get${beanName}ByPage(pg));
             return ResultVo.ok(pg);
         } catch (BaseException e) {
             e.printStackTrace();
-            return ResultVo.fail(e.getErrorCode,e.getMessage());
+            return ResultVo.fail(e.getCode(),e.getMessage());
         }
     }
     @ApiOperation(value = "选择查询所有", notes = "选择查询所有")
@@ -83,7 +83,7 @@ public class ${fileName} {
                 return ResultVo.ok(${serviceName}.selectBySelective(${beanArgName}));
             } catch (BaseException e) {
                 e.printStackTrace();
-                return ResultVo.fail(e.getErrorCode,e.getMessage());
+                return ResultVo.fail(e.getCode(),e.getMessage());
             }
         }
 
@@ -91,10 +91,10 @@ public class ${fileName} {
         @DeleteMapping("deleteByIds/{ids}")
         public ResultVo deleteByIds(@PathVariable String ids) {
             try {
-                return ResultVo.ok(${serviceName}.deleteArray(id.split(",")));
+                return ResultVo.ok(${serviceName}.deleteArray(ids.split(",")));
             } catch (BaseException e) {
                 e.printStackTrace();
-                return ResultVo.fail(e.getErrorCode,e.getMessage());
+                return ResultVo.fail(e.getCode(),e.getMessage());
             }
         }
 

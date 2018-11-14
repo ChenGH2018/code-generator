@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile
 import javax.management.RuntimeMBeanException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
 /**
  * Author:  chenguihao by 2018-11-09 22:56
  */
@@ -62,14 +61,24 @@ public class CodeGenerate {
         def beanName = tableNameToFileName(generateConfig.getTableName())
         def fileName = beanName+"Mapper"
         Map<String, Object> model = new HashMap<>()//freamarker解析的model
-        List<String> importPackages = new ArrayList<>()
+        List<String> fields = new ArrayList<>()
 
         //填充数据
-        model.put("mapperPath", generateConfig.getPackageName()+"."+"mapper"+"."+beanName.toLowerCase()+fileName)
-
-        model.put("fileName",fileName)//${mapperName} ${mapperArgName}
+        model.put("mapperPath", generateConfig.getPackageName()+"."+"mapper"+"."+beanName.toLowerCase()+"."+fileName)
+        //去掉id属性
+        for (int i =0 ; i<beanPropertyInfos.size();i++){
+            if(beanPropertyInfos.get(i).getColumName() == "id") beanPropertyInfos.remove(beanPropertyInfos.get(i))
+        }
+        //生成fields
+        beanPropertyInfos.forEach({
+            fields.add(it.getColumName())
+        })
+        model.put("tableAlias",generateTableAlias(generateConfig.getTableName()))
+        model.put("BeanPropertyInfos",beanPropertyInfos)
+        model.put("fields",fields)
         model.put("beanName",beanName)
-        def template = configuration.getTemplate("MapperTemplate.flt")
+        model.put("tableName",generateConfig.getTableName())
+        def template = configuration.getTemplate("MapperXmlTemplate.flt")
         def file = new File(getGenerateUrl().getPath() + '/Mapper/'+beanName.toLowerCase()+"/"+ fileName + prefix)
         file.getParentFile().mkdirs()
         file.createNewFile()
@@ -79,6 +88,19 @@ public class CodeGenerate {
         writer.close()
         return file
 
+    }
+
+    def generateTableAlias(String tableName) {
+        if(!tableName.length())
+            if(tableName.length()<= 0) throw new RuntimeException("tableName不能为空")
+        def offset = tableName[0] == "t"? 2:0;
+        def result = tableName[offset].toLowerCase()
+        offset++
+        for (;offset<tableName.length();offset++){
+            if(tableName[offset] == "_")
+                result += tableName[offset+1].toLowerCase()
+        }
+        return result;
     }
 
     File generateMapperFile(ArrayList<BeanPropertyInfo> beanPropertyInfos, GenerateConfig generateConfig) {
